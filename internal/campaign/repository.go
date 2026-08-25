@@ -6,10 +6,24 @@ import (
 )
 
 var ErrCampaignNotFound = errors.New("campaign not found")
-var ErrCategoryInactive = errors.New("category not found or inactive")
 
 type Repository struct {
 	db *sql.DB
+}
+
+func (r *Repository) GetCategoryStatus(id int) (bool, bool, error) {
+	var isActive bool
+	err := r.db.QueryRow(`
+		SELECT LOWER(TRIM(is_active::text)) = 'true'
+		FROM campaign_categories
+		WHERE id = $1`, id).Scan(&isActive)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, false, nil
+	}
+	if err != nil {
+		return false, false, err
+	}
+	return true, isActive, nil
 }
 
 func NewRepository(db *sql.DB) *Repository {
@@ -23,7 +37,7 @@ func (r *Repository) Create(campaign *Campaign) error {
 		(campaign, category_id, description, is_active, min_amount, target_amount, thumbnail)
 		SELECT $1, id, $3, $4, $5, $6, $7
 		FROM campaign_categories
-		WHERE id = $2 AND is_active = true
+		WHERE id = $2 AND LOWER(TRIM(is_active::text)) = 'true'
 		RETURNING id, created_at, updated_at`
 
 	err := r.db.QueryRow(query, campaign.CampaignName, campaign.CategoryID,
@@ -31,7 +45,7 @@ func (r *Repository) Create(campaign *Campaign) error {
 		campaign.TargetAmount, campaign.Thumbnail).Scan(&campaign.ID,
 		&campaign.CreatedAt, &campaign.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
-		return ErrCategoryInactive
+		return ErrCampaignNotFound
 	}
 	return err
 }

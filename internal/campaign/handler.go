@@ -105,7 +105,7 @@ func parseID(c *gin.Context) (int, bool) {
 func (h *Handler) respondError(c *gin.Context, err error, action string) {
 	status := http.StatusInternalServerError
 	message := "Failed to " + action + " campaign"
-	if errors.Is(err, ErrCampaignNameEmpty) || errors.Is(err, ErrCategoryIDInvalid) || errors.Is(err, ErrAmountInvalid) || errors.Is(err, ErrCategoryInactive) {
+	if errors.Is(err, ErrCampaignNameEmpty) || errors.Is(err, ErrCategoryIDInvalid) || errors.Is(err, ErrAmountInvalid) || errors.Is(err, ErrCategoryNotFound) || errors.Is(err, ErrCategoryInactive) {
 		status = http.StatusBadRequest
 		message = err.Error()
 	} else if errors.Is(err, ErrCampaignNotFound) {

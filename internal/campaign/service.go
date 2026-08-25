@@ -1,10 +1,15 @@
 package campaign
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 	ErrCampaignNameEmpty = errors.New("campaign name is empty")
 	ErrCategoryIDInvalid = errors.New("category id is invalid")
+	ErrCategoryNotFound  = errors.New("category id not found")
+	ErrCategoryInactive  = errors.New("category is inactive")
 	ErrAmountInvalid     = errors.New("amount is invalid")
 )
 
@@ -41,6 +46,9 @@ func (s *Service) Create(request *CampaignRequest) (*Campaign, error) {
 	if err := validateRequest(request); err != nil {
 		return nil, err
 	}
+	if err := s.validateCategory(request.CategoryID); err != nil {
+		return nil, err
+	}
 	campaign := &Campaign{CampaignName: request.CampaignName, CategoryID: request.CategoryID,
 		Description: request.Description, IsActive: request.IsActive, MinAmount: request.MinAmount,
 		TargetAmount: request.TargetAmount, Thumbnail: request.Thumbnail}
@@ -58,6 +66,9 @@ func (s *Service) Update(id int, request *CampaignRequest) (*Campaign, error) {
 	if err := validateRequest(request); err != nil {
 		return nil, err
 	}
+	if err := s.validateCategory(request.CategoryID); err != nil {
+		return nil, err
+	}
 	campaign := &Campaign{ID: id, CampaignName: request.CampaignName, CategoryID: request.CategoryID,
 		Description: request.Description, IsActive: request.IsActive, MinAmount: request.MinAmount,
 		TargetAmount: request.TargetAmount, Thumbnail: request.Thumbnail}
@@ -68,3 +79,17 @@ func (s *Service) Update(id int, request *CampaignRequest) (*Campaign, error) {
 }
 
 func (s *Service) Delete(id int) error { return s.repository.Delete(id) }
+
+func (s *Service) validateCategory(id int) error {
+	categoryExists, categoryActive, err := s.repository.GetCategoryStatus(id)
+	if err != nil {
+		return err
+	}
+	if !categoryExists {
+		return fmt.Errorf("%w: %d", ErrCategoryNotFound, id)
+	}
+	if !categoryActive {
+		return fmt.Errorf("%w: %d", ErrCategoryInactive, id)
+	}
+	return nil
+}

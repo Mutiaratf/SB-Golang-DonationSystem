@@ -66,7 +66,7 @@ func GenerateReceipt(receipt *Receipt, printedAt time.Time) ([]byte, error) {
 	pdf.SetXY(16, 51)
 	pdf.CellFormat(178, 10, "BUKTI DONASI", "", 0, "C", false, 0, "")
 
-	number := transactionNumber(receipt.ID, receipt.CreatedAt)
+	number := TransactionNumber(receipt.ID, receipt.CreatedAt)
 	pdf.SetFillColor(236, 239, 241)
 	pdf.RoundedRect(57, 66, 96, 11, 5, "1234", "F")
 	pdf.SetFont("Arial", "B", 10)
@@ -153,7 +153,7 @@ func row(pdf *gofpdf.Fpdf, label, value string, y float64) {
 	pdf.Line(16, y+3, 194, y+3)
 }
 
-func transactionNumber(id int64, date time.Time) string {
+func TransactionNumber(id int64, date time.Time) string {
 	return fmt.Sprintf("TRX-%s-%05d", date.Format("20060102"), id)
 }
 

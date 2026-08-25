@@ -8,6 +8,7 @@ import (
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/category"
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/config"
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/donor"
+	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/notification"
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/transaction"
 	"github.com/gin-gonic/gin"
 )
@@ -34,6 +35,9 @@ func main() {
 	transactionRepo := transaction.NewRepository(db)
 	transactionService := transaction.NewService(transactionRepo, donorService, campaignService)
 	transactionHandler := transaction.NewHandler(transactionService)
+	notificationRepo := notification.NewRepository(db)
+	notificationService := notification.NewService(notificationRepo)
+	notificationHandler := notification.NewHandler(notificationService)
 
 	r := gin.Default()
 
@@ -73,6 +77,7 @@ func main() {
 			transactions.PUT("/:id", transactionHandler.UpdateTransaction)
 			transactions.DELETE("/:id", transactionHandler.DeleteTransaction)
 			transactions.GET("/history/:id_campaign", transactionHandler.GetTransactionHistory)
+			transactions.POST("/notifications/:id_transaksi", notificationHandler.SendTransactionNotification)
 		}
 		api.GET("/print-transaction/:transaction_id", transactionHandler.PrintTransaction)
 

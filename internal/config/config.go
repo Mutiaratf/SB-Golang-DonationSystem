@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -17,12 +19,22 @@ type Config struct {
 	DBPass    string
 	DBName    string
 	DBSSLMode string
+	JWTSecret string
+	JWTIssuer string
+	JWTExpiry time.Duration
 }
 
 func Load() Config {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println(".env not found")
+	}
+
+	jwtExpiry := 24 * time.Hour
+	if value := os.Getenv("JWT_EXPIRY_HOURS"); value != "" {
+		if hours, parseErr := strconv.Atoi(value); parseErr == nil && hours > 0 {
+			jwtExpiry = time.Duration(hours) * time.Hour
+		}
 	}
 
 	return Config{
@@ -32,7 +44,30 @@ func Load() Config {
 		DBPass:    os.Getenv("DB_PASS"),
 		DBName:    os.Getenv("DB_NAME"),
 		DBSSLMode: os.Getenv("DB_SSL_MODE"),
+		JWTSecret: os.Getenv("JWT_SECRET"),
+		JWTIssuer: getEnvOrDefault("JWT_ISSUER", "donation-system"),
+		JWTExpiry: jwtExpiry,
 	}
+}
+
+func getEnvOrDefault(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return fallback
+}
+
+func (cfg Config) ValidateJWT() error {
+	if len(cfg.JWTSecret) < 32 {
+		return fmt.Errorf("JWT_SECRET must be at least 32 characters")
+	}
+	if cfg.JWTIssuer == "" {
+		return fmt.Errorf("JWT_ISSUER must not be empty")
+	}
+	if cfg.JWTExpiry <= 0 {
+		return fmt.Errorf("JWT_EXPIRY_HOURS must be greater than zero")
+	}
+	return nil
 }
 
 func InitDatabase(cfg Config) *sql.DB {

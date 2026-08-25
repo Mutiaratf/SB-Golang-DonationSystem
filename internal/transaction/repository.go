@@ -3,6 +3,8 @@ package transaction
 import (
 	"database/sql"
 	"errors"
+
+	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/pdf"
 )
 
 var ErrTransactionNotFound = errors.New("transaction not found")
@@ -31,6 +33,38 @@ func (r *Repository) GetAll() ([]*Transaction, error) {
 	}
 	defer rows.Close()
 	return scanTransactions(rows)
+}
+
+func (r *Repository) GetReceipt(id int64) (*pdf.Receipt, error) {
+	item := new(pdf.Receipt)
+	var companyName, companyLogo, companyAddress, companyPhone, companyEmail, companyWebsite, director, sign sql.NullString
+	row := r.db.QueryRow(`SELECT t.id, d.donor, d.phone,
+		c.campaign, t.amount, t.payment_method, t.created_at,
+		cp.company_name, cp.logo, cp.address, cp.phone, cp.email, cp.website,
+		cp.director, cp.sign
+		FROM transactions t
+		JOIN donors d ON d.id = t.donor_id
+		JOIN campaigns c ON c.id = t.campaign_id
+		LEFT JOIN company_profile cp ON true
+		WHERE t.id = $1`, id)
+	if err := row.Scan(&item.ID, &item.Donor, &item.Phone,
+		&item.Campaign, &item.Amount, &item.PaymentMethod, &item.CreatedAt,
+		&companyName, &companyLogo, &companyAddress, &companyPhone, &companyEmail,
+		&companyWebsite, &director, &sign); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrTransactionNotFound
+		}
+		return nil, err
+	}
+	item.CompanyName = companyName.String
+	item.CompanyLogo = companyLogo.String
+	item.CompanyAddress = companyAddress.String
+	item.CompanyPhone = companyPhone.String
+	item.CompanyEmail = companyEmail.String
+	item.CompanyWebsite = companyWebsite.String
+	item.Director = director.String
+	item.Sign = sign.String
+	return item, nil
 }
 
 func (r *Repository) GetHistory(campaignID int64) ([]*TransactionHistory, error) {

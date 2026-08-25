@@ -4,7 +4,9 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
+	receiptpdf "github.com/Mutiaratf/SB-Golang-DonationSystem/internal/pdf"
 	"github.com/gin-gonic/gin"
 )
 
@@ -98,6 +100,26 @@ func (h *Handler) GetTransactionHistory(c *gin.Context) {
 		"message": "Transaction history retrieved successfully",
 		"data":    items,
 	})
+}
+
+func (h *Handler) PrintTransaction(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("transaction_id"), 10, 64)
+	if err != nil || id <= 0 {
+		transactionError(c, http.StatusBadRequest, "Invalid transaction ID")
+		return
+	}
+	receipt, err := h.service.GetReceipt(id)
+	if err != nil {
+		handleError(c, err, "Failed to retrieve transaction")
+		return
+	}
+	pdfBytes, err := receiptpdf.GenerateReceipt(receipt, time.Now())
+	if err != nil {
+		transactionError(c, http.StatusInternalServerError, "Failed to generate donation receipt")
+		return
+	}
+	c.Header("Content-Disposition", `inline; filename="bukti-donasi-`+strconv.FormatInt(receipt.ID, 10)+`.pdf"`)
+	c.Data(http.StatusOK, "application/pdf", pdfBytes)
 }
 
 func transactionID(c *gin.Context) (int64, bool) {

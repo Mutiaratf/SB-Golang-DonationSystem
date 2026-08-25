@@ -7,6 +7,7 @@ import (
 
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/campaign"
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/donor"
+	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/pdf"
 )
 
 var (
@@ -107,6 +108,10 @@ func (s *Service) Create(request *TransactionRequest) (*Transaction, error) {
 
 func (s *Service) GetAll() ([]*Transaction, error) {
 	return s.repository.GetAll()
+}
+
+func (s *Service) GetReceipt(id int64) (*pdf.Receipt, error) {
+	return s.repository.GetReceipt(id)
 }
 
 func (s *Service) GetHistory(campaignID int64) ([]*TransactionHistory, error) {

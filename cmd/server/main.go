@@ -74,6 +74,7 @@ func main() {
 			transactions.DELETE("/:id", transactionHandler.DeleteTransaction)
 			transactions.GET("/history/:id_campaign", transactionHandler.GetTransactionHistory)
 		}
+		api.GET("/print-transaction/:transaction_id", transactionHandler.PrintTransaction)
 
 	}
 

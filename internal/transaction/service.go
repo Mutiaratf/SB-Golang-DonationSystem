@@ -59,13 +59,15 @@ func (s *Service) validate(request *TransactionRequest) error {
 
 func (s *Service) resolveDonor(request *TransactionRequest) (*donor.Donor, error) {
 	phone := strings.TrimSpace(request.Phone)
-	item, err := s.donorService.GetDonorByPhone(phone)
+	email := strings.TrimSpace(request.Email)
+	item, err := s.donorService.GetDonorByEmail(email)
 	if err == nil {
 		return item, nil
 	}
 	if !errors.Is(err, donor.ErrDonorNotFound) {
 		return nil, err
 	}
+
 	if strings.TrimSpace(request.Donor) == "" || strings.TrimSpace(request.Email) == "" || strings.TrimSpace(request.Gender) == "" {
 		return nil, ErrDonorDataRequired
 	}

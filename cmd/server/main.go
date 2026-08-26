@@ -89,6 +89,9 @@ func main() {
 			protectedCampaigns.POST("", campaignHandler.CreateCampaign)
 			protectedCampaigns.PUT("/:id", campaignHandler.UpdateCampaign)
 			protectedCampaigns.DELETE("/:id", campaignHandler.DeleteCampaign)
+			protectedCampaigns.POST("/:id/updates", campaignUpdateHandler.Create)
+			protectedCampaigns.PUT("/:id/updates/:update_id", campaignUpdateHandler.Update)
+			protectedCampaigns.DELETE("/:id/updates/:update_id", campaignUpdateHandler.Delete)
 
 			protectedDonors := protected.Group("/donors")
 			protectedDonors.POST("", donorHandler.CreateDonor)

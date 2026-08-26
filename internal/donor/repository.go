@@ -39,6 +39,17 @@ func (r *Repository) GetByPhone(phone string) (*Donor, error) {
 	return donor, err
 }
 
+func (r *Repository) GetByEmail(email string) (*Donor, error) {
+	donor := new(Donor)
+	err := r.db.QueryRow(`SELECT id, donor, gender, email, phone, created_at, updated_at
+		FROM donors WHERE email = $1`, email).Scan(&donor.ID, &donor.Donor, &donor.Gender,
+		&donor.Email, &donor.Phone, &donor.CreatedAt, &donor.UpdatedAt)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, ErrDonorNotFound
+	}
+	return donor, err
+}
+
 func (r *Repository) GetAll() ([]*Donor, error) {
 	rows, err := r.db.Query(`SELECT id, donor, gender, email, phone, created_at, updated_at
 		FROM donors ORDER BY id`)

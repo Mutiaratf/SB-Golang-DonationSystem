@@ -93,7 +93,21 @@ func scanTransactions(rows *sql.Rows) ([]*Transaction, error) {
 	var transactions []*Transaction
 	for rows.Next() {
 		item := new(Transaction)
-		if err := rows.Scan(&item.Donor, &item.CampaignID, &item.Amount, &item.Prayer); err != nil {
+		if err := rows.Scan(
+			&item.ID,
+			&item.DonorID,
+			&item.Donor,
+			&item.Email,
+			&item.Phone,
+			&item.Gender,
+			&item.IsAnonymous,
+			&item.CampaignID,
+			&item.Amount,
+			&item.PaymentMethod,
+			&item.Prayer,
+			&item.CreatedAt,
+			&item.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		transactions = append(transactions, item)

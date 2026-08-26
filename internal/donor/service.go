@@ -70,14 +70,6 @@ func (s *Service) CreateDonor(req *DonorRequest) (*Donor, error) {
 	if req.Gender != "P" && req.Gender != "L" {
 		return nil, ErrDonorGenderInvalid
 	}
-	phone := strings.TrimSpace(req.Phone)
-	exists, err := s.donorRepo.ExistsByPhone(phone)
-	if err != nil {
-		return nil, err
-	}
-	if exists {
-		return nil, ErrDonorPhoneExists
-	}
 	donor := donorFromRequest(req)
 	if err := s.donorRepo.Create(donor); err != nil {
 		return nil, err
@@ -95,6 +87,10 @@ func (s *Service) GetDonorByID(id int64) (*Donor, error) {
 
 func (s *Service) GetDonorByPhone(phone string) (*Donor, error) {
 	return s.donorRepo.GetByPhone(phone)
+}
+
+func (s *Service) GetDonorByEmail(email string) (*Donor, error) {
+	return s.donorRepo.GetByEmail(strings.TrimSpace(email))
 }
 
 func (s *Service) UpdateDonor(id int64, req *DonorRequest) (*Donor, error) {

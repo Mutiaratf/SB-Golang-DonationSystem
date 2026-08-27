@@ -16,6 +16,15 @@ func NewHandler(donorService *Service) *Handler {
 	return &Handler{donorService: donorService}
 }
 
+// @Summary Create donor
+// @Tags Donors
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body DonorRequest true "Donor"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400,401,500 {object} map[string]string
+// @Router /donors [post]
 func (h *Handler) CreateDonor(c *gin.Context) {
 	var req DonorRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -37,6 +46,13 @@ func (h *Handler) CreateDonor(c *gin.Context) {
 	})
 }
 
+// @Summary List donors
+// @Tags Donors
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 401,500 {object} map[string]string
+// @Router /donors [get]
 func (h *Handler) GetAllDonors(c *gin.Context) {
 	donors, err := h.donorService.GetAllDonors()
 	if err != nil {
@@ -53,6 +69,14 @@ func (h *Handler) GetAllDonors(c *gin.Context) {
 	})
 }
 
+// @Summary Get donor
+// @Tags Donors
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "Donor ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /donors/{id} [get]
 func (h *Handler) GetDonorByID(c *gin.Context) {
 	id, ok := donorID(c)
 	if !ok {
@@ -70,6 +94,16 @@ func (h *Handler) GetDonorByID(c *gin.Context) {
 	})
 }
 
+// @Summary Update donor
+// @Tags Donors
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "Donor ID"
+// @Param request body DonorRequest true "Donor"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /donors/{id} [put]
 func (h *Handler) UpdateDonor(c *gin.Context) {
 	id, ok := donorID(c)
 	if !ok {
@@ -95,6 +129,14 @@ func (h *Handler) UpdateDonor(c *gin.Context) {
 	})
 }
 
+// @Summary Delete donor
+// @Tags Donors
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "Donor ID"
+// @Success 200 {object} map[string]string
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /donors/{id} [delete]
 func (h *Handler) DeleteDonor(c *gin.Context) {
 	id, ok := donorID(c)
 	if !ok {

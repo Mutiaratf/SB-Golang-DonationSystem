@@ -20,6 +20,15 @@ func NewHandler(service *Service, cfg config.Config) *Handler {
 	return &Handler{service: service, config: cfg}
 }
 
+// Login authenticates a user and returns a JWT.
+// @Summary Login
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body LoginRequest true "Login credentials"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,401,500 {object} map[string]string
+// @Router /auth/login [post]
 func (h *Handler) Login(c *gin.Context) {
 	var request LoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -54,6 +63,15 @@ func (h *Handler) Login(c *gin.Context) {
 	})
 }
 
+// Register creates a user account.
+// @Summary Register
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body RegisterRequest true "Registration details"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400,409,500 {object} map[string]string
+// @Router /auth/register [post]
 func (h *Handler) Register(c *gin.Context) {
 	var request RegisterRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

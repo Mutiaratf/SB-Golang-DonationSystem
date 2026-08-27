@@ -12,6 +12,15 @@ type Handler struct{ service *Service }
 
 func NewHandler(service *Service) *Handler { return &Handler{service: service} }
 
+// @Summary Create campaign
+// @Tags Campaigns
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body CampaignRequest true "Campaign"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400,401,500 {object} map[string]string
+// @Router /campaigns [post]
 func (h *Handler) CreateCampaign(c *gin.Context) {
 	var request CampaignRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -26,6 +35,12 @@ func (h *Handler) CreateCampaign(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Campaign created successfully", "data": campaign})
 }
 
+// @Summary List campaigns
+// @Tags Campaigns
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]string
+// @Router /campaigns [get]
 func (h *Handler) GetAllCampaigns(c *gin.Context) {
 	campaigns, err := h.service.GetAll()
 	if err != nil {
@@ -39,6 +54,13 @@ func (h *Handler) GetAllCampaigns(c *gin.Context) {
 	})
 }
 
+// @Summary Get campaign
+// @Tags Campaigns
+// @Produce json
+// @Param id path int true "Campaign ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,404,500 {object} map[string]string
+// @Router /campaigns/{id} [get]
 func (h *Handler) GetCampaignByID(c *gin.Context) {
 	id, ok := parseID(c)
 	if !ok {
@@ -56,6 +78,16 @@ func (h *Handler) GetCampaignByID(c *gin.Context) {
 	})
 }
 
+// @Summary Update campaign
+// @Tags Campaigns
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "Campaign ID"
+// @Param request body CampaignRequest true "Campaign"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /campaigns/{id} [put]
 func (h *Handler) UpdateCampaign(c *gin.Context) {
 	id, ok := parseID(c)
 	if !ok {
@@ -78,6 +110,14 @@ func (h *Handler) UpdateCampaign(c *gin.Context) {
 	})
 }
 
+// @Summary Delete campaign
+// @Tags Campaigns
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "Campaign ID"
+// @Success 200 {object} map[string]string
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /campaigns/{id} [delete]
 func (h *Handler) DeleteCampaign(c *gin.Context) {
 	id, ok := parseID(c)
 	if !ok {

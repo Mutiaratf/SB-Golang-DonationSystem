@@ -16,6 +16,14 @@ type Handler struct {
 
 func NewHandler(service *Service) *Handler { return &Handler{service: service} }
 
+// @Summary Create transaction
+// @Tags Transactions
+// @Accept json
+// @Produce json
+// @Param request body TransactionRequest true "Donation transaction"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400,500 {object} map[string]string
+// @Router /transactions [post]
 func (h *Handler) CreateTransaction(c *gin.Context) {
 	var request TransactionRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -34,6 +42,13 @@ func (h *Handler) CreateTransaction(c *gin.Context) {
 	})
 }
 
+// @Summary List transactions
+// @Tags Transactions
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 401,500 {object} map[string]string
+// @Router /transactions [get]
 func (h *Handler) GetAllTransactions(c *gin.Context) {
 	items, err := h.service.GetAll()
 	if err != nil {
@@ -47,6 +62,16 @@ func (h *Handler) GetAllTransactions(c *gin.Context) {
 	})
 }
 
+// @Summary Update transaction
+// @Tags Transactions
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "Transaction ID"
+// @Param request body TransactionRequest true "Donation transaction"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /transactions/{id} [put]
 func (h *Handler) UpdateTransaction(c *gin.Context) {
 	id, ok := transactionID(c)
 	if !ok {
@@ -69,6 +94,14 @@ func (h *Handler) UpdateTransaction(c *gin.Context) {
 	})
 }
 
+// @Summary Delete transaction
+// @Tags Transactions
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "Transaction ID"
+// @Success 200 {object} map[string]string
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /transactions/{id} [delete]
 func (h *Handler) DeleteTransaction(c *gin.Context) {
 	id, ok := transactionID(c)
 	if !ok {
@@ -84,6 +117,13 @@ func (h *Handler) DeleteTransaction(c *gin.Context) {
 	})
 }
 
+// @Summary Get transaction history
+// @Tags Transactions
+// @Produce json
+// @Param id_campaign path int true "Campaign ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,500 {object} map[string]string
+// @Router /transactions/history/{id_campaign} [get]
 func (h *Handler) GetTransactionHistory(c *gin.Context) {
 	campaignID, err := strconv.ParseInt(c.Param("id_campaign"), 10, 64)
 	if err != nil || campaignID <= 0 {
@@ -102,6 +142,13 @@ func (h *Handler) GetTransactionHistory(c *gin.Context) {
 	})
 }
 
+// @Summary Print transaction receipt
+// @Tags Transactions
+// @Produce application/pdf
+// @Param transaction_id path int true "Transaction ID"
+// @Success 200 {file} binary
+// @Failure 400,404,500 {object} map[string]string
+// @Router /print-transaction/{transaction_id} [get]
 func (h *Handler) PrintTransaction(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("transaction_id"), 10, 64)
 	if err != nil || id <= 0 {

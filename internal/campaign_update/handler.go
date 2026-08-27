@@ -16,6 +16,13 @@ func NewHandler(service *Service) *Handler {
 	return &Handler{service: service}
 }
 
+// @Summary List campaign updates
+// @Tags Campaign Updates
+// @Produce json
+// @Param id path int true "Campaign ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,500 {object} map[string]string
+// @Router /campaigns/{id}/updates [get]
 func (h *Handler) GetByCampaignID(c *gin.Context) {
 	campaignID, err := strconv.Atoi(c.Param("id"))
 	if err != nil || campaignID <= 0 {
@@ -42,6 +49,16 @@ func (h *Handler) GetByCampaignID(c *gin.Context) {
 	})
 }
 
+// @Summary Create campaign update
+// @Tags Campaign Updates
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "Campaign ID"
+// @Param request body CampaignUpdateRequest true "Campaign update"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400,401,500 {object} map[string]string
+// @Router /campaigns/{id}/updates [post]
 func (h *Handler) Create(c *gin.Context) {
 	campaignID, ok := parseID(c, "id")
 	if !ok {
@@ -60,6 +77,17 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Campaign update created successfully", "data": update})
 }
 
+// @Summary Update campaign update
+// @Tags Campaign Updates
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "Campaign ID"
+// @Param update_id path int true "Campaign update ID"
+// @Param request body CampaignUpdateRequest true "Campaign update"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /campaigns/{id}/updates/{update_id} [put]
 func (h *Handler) Update(c *gin.Context) {
 	campaignID, ok := parseID(c, "id")
 	if !ok {
@@ -82,6 +110,15 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Campaign update updated successfully", "data": update})
 }
 
+// @Summary Delete campaign update
+// @Tags Campaign Updates
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "Campaign ID"
+// @Param update_id path int true "Campaign update ID"
+// @Success 200 {object} map[string]string
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /campaigns/{id}/updates/{update_id} [delete]
 func (h *Handler) Delete(c *gin.Context) {
 	campaignID, ok := parseID(c, "id")
 	if !ok {

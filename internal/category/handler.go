@@ -18,6 +18,15 @@ func NewHandler(categoryService *CategoryService) *categoryHandler {
 	}
 }
 
+// @Summary Create category
+// @Tags Categories
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body CategoryRequest true "Category"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400,401,500 {object} map[string]string
+// @Router /categories [post]
 func (h *categoryHandler) CreateCategory(c *gin.Context) {
 	var req CategoryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -51,6 +60,12 @@ func (h *categoryHandler) CreateCategory(c *gin.Context) {
 	})
 }
 
+// @Summary List categories
+// @Tags Categories
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]string
+// @Router /categories [get]
 func (h *categoryHandler) GetAllCategories(c *gin.Context) {
 	categories, err := h.categoryService.GetAllCategories()
 	if err != nil {
@@ -68,6 +83,16 @@ func (h *categoryHandler) GetAllCategories(c *gin.Context) {
 	})
 }
 
+// @Summary Update category
+// @Tags Categories
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "Category ID"
+// @Param request body CategoryRequest true "Category"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /categories/{id} [put]
 func (h *categoryHandler) UpdateCategory(c *gin.Context) {
 	var req CategoryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -111,6 +136,14 @@ func (h *categoryHandler) UpdateCategory(c *gin.Context) {
 	})
 }
 
+// @Summary Delete category
+// @Tags Categories
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "Category ID"
+// @Success 200 {object} map[string]string
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /categories/{id} [delete]
 func (h *categoryHandler) DeleteCategory(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

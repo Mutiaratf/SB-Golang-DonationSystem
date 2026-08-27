@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	_ "github.com/Mutiaratf/SB-Golang-DonationSystem/docs"
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/campaign"
 	campaignupdate "github.com/Mutiaratf/SB-Golang-DonationSystem/internal/campaign_update"
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/category"
@@ -13,8 +14,19 @@ import (
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/transaction"
 	"github.com/Mutiaratf/SB-Golang-DonationSystem/internal/user"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title Donation System API
+// @version 1.0
+// @description REST API for managing donation campaigns, donors, transactions, and notifications.
+// @host localhost:8082
+// @BasePath /api
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Enter "Bearer <JWT token>".
 func main() {
 
 	cfg := config.Load()
@@ -52,6 +64,7 @@ func main() {
 	userHandler := user.NewHandler(userService, cfg)
 
 	r := gin.Default()
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.Group("/api")
 	{

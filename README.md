@@ -6,6 +6,7 @@ REST API untuk platform donasi digital. Aplikasi ini mengelola kategori, campaig
 
 - [Menjalankan Aplikasi](#menjalankan-aplikasi)
 - [Autentikasi](#autentikasi)
+- [Swagger UI](#swagger-ui)
 - [Format Response](#format-response)
 - [Dokumentasi Endpoint](#dokumentasi-endpoint)
 - [Notifikasi Email](#notifikasi-email)
@@ -54,6 +55,16 @@ Server berjalan pada `http://localhost:8082`. Semua endpoint menggunakan prefix 
 ```text
 Base URL: http://localhost:8082/api
 Content-Type: application/json
+```
+
+## Swagger UI
+
+Setelah server berjalan, buka [http://localhost:8082/swagger/index.html](http://localhost:8082/swagger/index.html) untuk melihat dan mencoba seluruh endpoint API.
+
+Swagger files berada di direktori `docs/`. Regenerasi dokumentasi setelah mengubah anotasi endpoint:
+
+```bash
+go run github.com/swaggo/swag/cmd/swag@v1.16.6 init -g cmd/server/main.go -o docs
 ```
 
 ## Autentikasi

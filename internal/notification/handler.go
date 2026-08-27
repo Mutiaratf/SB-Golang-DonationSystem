@@ -12,6 +12,14 @@ type Handler struct{ service *Service }
 
 func NewHandler(service *Service) *Handler { return &Handler{service: service} }
 
+// @Summary Send transaction notification
+// @Tags Notifications
+// @Security BearerAuth
+// @Produce json
+// @Param id_transaksi path int true "Transaction ID"
+// @Success 202 {object} map[string]interface{}
+// @Failure 400,401,404,500 {object} map[string]string
+// @Router /transactions/notifications/{id_transaksi} [post]
 func (h *Handler) SendTransactionNotification(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id_transaksi"), 10, 64)
 	if err != nil || id <= 0 {
